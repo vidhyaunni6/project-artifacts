@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Artifacts · Vidya Unni · TPM</title>
+<style>
+  :root{
+    --grab:#00B14F; --grab-dark:#008a3e; --grab-light:#e6f7ee;
+    --ink:#0d1b2a; --muted:#5b6b7b; --line:#e2e8f0; --bg:#f6f8fa;
+    --amber:#f59e0b; --amber-bg:#fef3c7; --red:#ef4444; --red-bg:#fee2e2;
+    --card:#fff; --shadow:0 1px 3px rgba(13,27,42,.08),0 10px 28px rgba(13,27,42,.05);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 24px 100px}
+
+  /* project switcher (top-level) */
+  .switcher{position:sticky;top:0;z-index:40;background:#022b1a;
+    box-shadow:0 2px 10px rgba(2,43,26,.35)}
+  .switcher .inner{max-width:1040px;margin:0 auto;padding:12px 24px;display:flex;flex-wrap:wrap;
+    align-items:center;gap:14px}
+  .switcher .brand{color:#fff;font-size:13px;font-weight:700;letter-spacing:.02em;margin-right:auto;
+    display:flex;align-items:center;gap:9px;opacity:.92}
+  .switcher .brand span{opacity:.6;font-weight:600}
+  .switcher .tabs{display:flex;gap:8px;flex-wrap:wrap}
+  .switcher button{font:inherit;font-size:13px;font-weight:700;cursor:pointer;color:rgba(255,255,255,.8);
+    background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:99px;
+    padding:8px 16px;transition:all .15s}
+  .switcher button:hover{background:rgba(255,255,255,.16);color:#fff}
+  .switcher button.active{background:var(--grab);border-color:var(--grab);color:#fff}
+  .switcher button .num{opacity:.6;font-weight:600;margin-right:6px}
+
+  /* header */
+  header{background:linear-gradient(135deg,#022b1a 0%,#00622f 55%,var(--grab) 100%);color:#fff;padding:52px 24px 60px}
+  header .inner{max-width:1040px;margin:0 auto}
+  .kicker{display:inline-block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    background:rgba(255,255,255,.16);padding:6px 12px;border-radius:99px;font-weight:600;margin-bottom:16px}
+  h1{margin:0 0 12px;font-size:34px;line-height:1.14;font-weight:800;letter-spacing:-.02em}
+  header p{margin:0;font-size:17px;max-width:720px;color:rgba(255,255,255,.9)}
+  .meta{margin-top:22px;display:flex;flex-wrap:wrap;gap:22px;font-size:13px;color:rgba(255,255,255,.85)}
+  .meta b{color:#fff;display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;opacity:.7;margin-bottom:2px}
+  .stack{margin-top:26px;padding-top:22px;border-top:1px solid rgba(255,255,255,.18)}
+  .stack .lbl{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.7);font-weight:700;margin-bottom:12px}
+  .stack .row{display:flex;flex-wrap:wrap;gap:10px}
+  .techpill{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.22);border-radius:10px;padding:8px 13px;font-size:13px;color:#fff}
+  .techpill span{opacity:.72;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+  .techpill b{font-weight:700}
+
+  /* sticky nav (below the switcher) */
+  nav{position:sticky;top:57px;z-index:20;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);margin-bottom:8px}
+  nav .inner{max-width:1040px;margin:0 auto;padding:10px 24px;display:flex;flex-wrap:wrap;gap:6px}
+  nav a{font-size:13px;font-weight:600;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:8px}
+  nav a:hover{background:var(--grab-light);color:var(--grab-dark)}
+
+  section.block{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:34px;
+    margin-top:26px;box-shadow:var(--shadow);scroll-margin-top:122px}
+  .sec-num{font-size:12px;font-weight:700;letter-spacing:.14em;color:var(--grab);text-transform:uppercase}
+  h2{font-size:26px;font-weight:800;margin:4px 0 18px;letter-spacing:-.01em}
+  h3{font-size:16px;margin:20px 0 6px;font-weight:700}
+  p{color:var(--ink)}
+  .muted{color:var(--muted)}
+  .lead{font-size:17px;color:var(--ink)}
+
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .card2{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .card2 .ic{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+    font-size:19px;margin-bottom:10px;background:var(--grab-light)}
+  .card2 h3{margin:0 0 4px}
+
+  ul.clean{list-style:none;padding:0;margin:8px 0 0}
+  ul.clean li{padding:8px 0 8px 26px;position:relative;border-bottom:1px dashed var(--line)}
+  ul.clean li:last-child{border-bottom:none}
+  ul.clean li::before{content:"→";position:absolute;left:0;color:var(--grab);font-weight:800}
+
+  table{width:100%;border-collapse:collapse;font-size:14px;margin-top:6px}
+  th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  tr:last-child td{border-bottom:none}
+  code{background:#0d1b2a;color:#7cf0a8;padding:2px 7px;border-radius:6px;font-size:13px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .tag{display:inline-block;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:700;white-space:nowrap}
+  .t-merge{background:var(--grab-light);color:var(--grab-dark)}
+  .t-review{background:var(--amber-bg);color:#92600a}
+  .t-reject{background:var(--red-bg);color:#991b1b}
+  .note{background:var(--grab-light);border-left:4px solid var(--grab);border-radius:0 10px 10px 0;
+    padding:16px 18px;font-size:14px;margin-top:18px}
+  .diagram{background:linear-gradient(180deg,#fbfdfc,#f2f7f4);border:1px solid var(--line);
+    border-radius:14px;padding:20px;overflow-x:auto;margin-top:8px}
+  svg{max-width:100%;height:auto;display:block}
+  .flowlabel{font:600 13px/1.2 -apple-system,sans-serif;fill:var(--ink)}
+  .flowsub{font:500 11px/1.2 -apple-system,sans-serif;fill:var(--muted)}
+  .metricrow{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:6px}
+  .metric{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:16px;text-align:center}
+  .metric b{display:block;font-size:24px;font-weight:800;color:var(--grab-dark);letter-spacing:-.02em}
+  .metric span{font-size:12px;color:var(--muted)}
+  .step{display:flex;gap:16px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .step:last-child{border-bottom:none}
+  .step .n{flex:none;width:34px;height:34px;border-radius:50%;background:var(--grab);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:800}
+  .pill{display:inline-block;background:#eef2f6;color:#475569;border-radius:6px;padding:2px 8px;
+    font-size:12px;font-weight:600;margin:2px 4px 2px 0}
+  footer{text-align:center;color:var(--muted);font-size:13px;margin-top:40px}
+
+  /* project show/hide */
+  .project{display:none}
+  .project.active{display:block}
+
+  @media(max-width:720px){.g2,.g3,.metricrow{grid-template-columns:1fr}h1{font-size:27px}
+    .switcher .brand{width:100%;margin-bottom:4px}}
+</style>
+</head>
+<body>
+
+<!-- TOP-LEVEL PROJECT SWITCHER -->
+<div class="switcher">
+  <div class="inner">
+    <div class="brand">📁 Project Artifacts <span>· Vidya Unni · TPM</span></div>
+    <div class="tabs">
+      <button data-target="poi" class="active"><span class="num">01</span>POI Validation</button>
+      <button data-target="stt"><span class="num">02</span>STT Meeting Agent</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================= -->
+<!-- PROJECT 1 · POI VALIDATION                                    -->
+<!-- ============================================================= -->
+<div class="project active" id="poi">
+
+<header>
+  <div class="inner">
+    <span class="kicker">TPM Project Artifact</span>
+    <h1>Agentic AI for Autonomous POI Validation &amp; Map Edits</h1>
+    <p>An autonomous first-pass map reviewer that reads driver-submitted storefront photos, cross-references Grab's Places database, auto-merges the confident majority, and routes only the hard cases to human operators.</p>
+    <div class="meta">
+      <div><b>Owner</b>Vidya Unni · TPM</div>
+      <div><b>Domain</b>GrabMaps · Map Operations</div>
+      <div><b>Stage</b>Working prototype → Singapore pilot</div>
+      <div><b>Type</b>Agentic AI workflow</div>
+    </div>
+  </div>
+</header>
+
+<nav>
+  <div class="inner">
+    <a href="#problem">Problem</a>
+    <a href="#solution">Solution</a>
+    <a href="#workflow">Workflow</a>
+    <a href="#tools">Tools &amp; Setup</a>
+    <a href="#reuse">Reuse in any TPM work</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- 1. PROBLEM -->
+  <section class="block" id="problem">
+    <div class="sec-num">01 · Problem</div>
+    <h2>Manual map review is the bottleneck</h2>
+    <p class="lead">GrabMaps depends on crowdsourced data — millions of driver-partners submit photos, new Points of Interest (POIs), and business updates through the app and KartaCam.</p>
+    <p class="muted">Today, a human operator must open each submission, read the storefront, check it against the existing base map, and decide whether to add it, update it, or discard it. That work is:</p>
+    <div class="grid g3" style="margin-top:14px">
+      <div class="card2"><div class="ic">🐌</div><h3>Slow &amp; labor-intensive</h3><p class="muted">Every edit waits in a human queue, so the map lags behind Southeast Asia's fast urban change.</p></div>
+      <div class="card2"><div class="ic">💸</div><h3>Expensive at scale</h3><p class="muted">Review hours grow linearly with submission volume across every market.</p></div>
+      <div class="card2"><div class="ic">🔁</div><h3>Mostly routine</h3><p class="muted">The large majority of submissions are clear-cut — humans spend their time on cases a machine could clear.</p></div>
+    </div>
+    <div class="note"><strong>The core insight:</strong> ~80% of submissions are easy and repetitive; the value of a human is in the ambiguous ~20%. The opportunity is to let people spend their time only where judgement is actually needed.</div>
+  </section>
+
+  <!-- 2. SOLUTION -->
+  <section class="block" id="solution">
+    <div class="sec-num">02 · Solution</div>
+    <h2>An AI agent as the autonomous first-pass reviewer</h2>
+    <p class="lead">When a driver submits a storefront photo, an AI agent extracts the business details, cross-references them against the Places DB and local web sources, and makes a confidence-based call.</p>
+    <div class="grid g3" style="margin-top:14px">
+      <div class="card2"><div class="ic" style="background:var(--grab-light)">✓</div><h3>Auto-merge</h3><p class="muted">High-confidence, no conflict → added to the map automatically. No human touch.</p></div>
+      <div class="card2"><div class="ic" style="background:var(--amber-bg)">⚑</div><h3>Route to human</h3><p class="muted">Ambiguous → sent to an operator queue <b>with the summary already written</b> for a fast Approve/Reject.</p></div>
+      <div class="card2"><div class="ic" style="background:var(--red-bg)">✕</div><h3>Reject</h3><p class="muted">Unreadable / insufficient signal → discarded, nothing written to the map.</p></div>
+    </div>
+    <h3>Design principle</h3>
+    <p class="muted">The agent is <strong>autonomous on the easy majority but never guesses on the hard minority.</strong> Humans keep full control of everything ambiguous, and every routing threshold is a dial the operations team can tune.</p>
+    <div class="metricrow">
+      <div class="metric"><b>~80%</b><span>edits auto-cleared (target)</span></div>
+      <div class="metric"><b>&lt;1 min</b><span>photo → map decision</span></div>
+      <div class="metric"><b>Pre-filled</b><span>operator summaries</span></div>
+      <div class="metric"><b>Near real-time</b><span>map freshness</span></div>
+    </div>
+  </section>
+
+  <!-- 3. WORKFLOW -->
+  <section class="block" id="workflow">
+    <div class="sec-num">03 · Workflow</div>
+    <h2>The 4-station agent pipeline</h2>
+    <p class="muted">A submission moves through four stations and comes out with a decision plus a plain-English rationale.</p>
+
+    <div class="diagram">
+      <svg viewBox="0 0 960 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Agent pipeline">
+        <defs>
+          <marker id="poi-ar" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#00B14F"/></marker>
+          <marker id="poi-arG" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#008a3e"/></marker>
+          <marker id="poi-arA" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#f59e0b"/></marker>
+        </defs>
+        <rect x="6" y="110" width="112" height="70" rx="12" fill="#0d1b2a"/>
+        <text x="62" y="138" text-anchor="middle" class="flowlabel" fill="#fff">📷 Photo</text>
+        <text x="62" y="156" text-anchor="middle" class="flowsub" fill="#9fb3c8">driver submits</text>
+
+        <rect x="150" y="18" width="150" height="84" rx="12" fill="#fff" stroke="#00B14F" stroke-width="2"/>
+        <text x="225" y="44" text-anchor="middle" class="flowlabel">1 · Read</text>
+        <text x="225" y="63" text-anchor="middle" class="flowsub">name · address · hours</text>
+        <text x="225" y="80" text-anchor="middle" class="flowsub">+ confidence per field</text>
+        <text x="225" y="95" text-anchor="middle" style="font:700 10px sans-serif" fill="#00B14F">Vision-Language Model</text>
+
+        <rect x="330" y="18" width="150" height="84" rx="12" fill="#fff" stroke="#00B14F" stroke-width="2"/>
+        <text x="405" y="44" text-anchor="middle" class="flowlabel">2 · Match</text>
+        <text x="405" y="63" text-anchor="middle" class="flowsub">vs Places DB</text>
+        <text x="405" y="80" text-anchor="middle" class="flowsub">name + geo distance</text>
+        <text x="405" y="95" text-anchor="middle" style="font:700 10px sans-serif" fill="#00B14F">Dice + Haversine</text>
+
+        <rect x="510" y="18" width="150" height="84" rx="12" fill="#fff" stroke="#00B14F" stroke-width="2"/>
+        <text x="585" y="44" text-anchor="middle" class="flowlabel">3 · Corroborate</text>
+        <text x="585" y="63" text-anchor="middle" class="flowsub">local web sources</text>
+        <text x="585" y="80" text-anchor="middle" class="flowsub">confirm / contradict</text>
+        <text x="585" y="95" text-anchor="middle" style="font:700 10px sans-serif" fill="#00B14F">Place-search lookup</text>
+
+        <polygon points="720,60 775,25 830,60 775,95" fill="#0d1b2a"/>
+        <text x="775" y="57" text-anchor="middle" class="flowlabel" fill="#fff">4 · Decide</text>
+        <text x="775" y="73" text-anchor="middle" class="flowsub" fill="#9fb3c8">score</text>
+
+        <line x1="118" y1="145" x2="146" y2="70" stroke="#00B14F" stroke-width="2.5" marker-end="url(#poi-ar)"/>
+        <line x1="300" y1="60" x2="326" y2="60" stroke="#00B14F" stroke-width="2.5" marker-end="url(#poi-ar)"/>
+        <line x1="480" y1="60" x2="506" y2="60" stroke="#00B14F" stroke-width="2.5" marker-end="url(#poi-ar)"/>
+        <line x1="660" y1="60" x2="716" y2="60" stroke="#00B14F" stroke-width="2.5" marker-end="url(#poi-ar)"/>
+
+        <rect x="690" y="140" width="170" height="52" rx="11" fill="#e6f7ee" stroke="#008a3e" stroke-width="2"/>
+        <text x="775" y="163" text-anchor="middle" class="flowlabel" fill="#008a3e">✓ Auto-merge</text>
+        <text x="775" y="181" text-anchor="middle" class="flowsub" fill="#008a3e">confidence ≥ 85%</text>
+
+        <rect x="690" y="200" width="170" height="52" rx="11" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+        <text x="775" y="223" text-anchor="middle" class="flowlabel" fill="#92600a">⚑ Human queue</text>
+        <text x="775" y="241" text-anchor="middle" class="flowsub" fill="#92600a">60–85% · pre-summarized</text>
+
+        <rect x="690" y="260" width="170" height="44" rx="11" fill="#fee2e2" stroke="#ef4444" stroke-width="2"/>
+        <text x="775" y="287" text-anchor="middle" class="flowlabel" fill="#991b1b">✕ Reject &lt; 60%</text>
+
+        <line x1="775" y1="95" x2="775" y2="138" stroke="#008a3e" stroke-width="2.5" marker-end="url(#poi-arG)"/>
+        <line x1="740" y1="88" x2="720" y2="224" stroke="#f59e0b" stroke-width="2.5" marker-end="url(#poi-arA)"/>
+        <line x1="732" y1="84" x2="716" y2="278" stroke="#ef4444" stroke-width="2" stroke-dasharray="5 4"/>
+        <path d="M690,226 C480,300 300,300 225,300 L225,102" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#poi-arA)"/>
+        <text x="440" y="316" text-anchor="middle" class="flowsub" fill="#92600a">human approve → map · reject → clears</text>
+      </svg>
+    </div>
+
+    <table>
+      <thead><tr><th>Step</th><th>What it does</th><th>Technology</th></tr></thead>
+      <tbody>
+        <tr><td><b>1 · Read</b></td><td>Extracts business name, address, operating hours + a confidence score per field</td><td>Vision-Language Model (Claude Opus 4.8 / GPT-4o)</td></tr>
+        <tr><td><b>2 · Match</b></td><td>Checks whether the place already exists nearby (new vs duplicate vs hours-change)</td><td>Dice coefficient (name similarity) + Haversine (GPS distance)</td></tr>
+        <tr><td><b>3 · Corroborate</b></td><td>Asks local/web sources whether they agree; raises or lowers confidence</td><td>Place-search / web lookup</td></tr>
+        <tr><td><b>4 · Decide</b></td><td>Combines signals into one score and routes by clear rules</td><td>Transparent weighted scoring + thresholds</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Routing rules (auditable, tunable)</h3>
+    <table>
+      <tbody>
+        <tr><td>Sign unreadable (&lt;60%)</td><td><span class="tag t-reject">Reject</span></td><td class="muted">No reliable data to act on</td></tr>
+        <tr><td>Strong match to existing place</td><td><span class="tag t-review">Human review</span></td><td class="muted">Possible duplicate, or an hours update</td></tr>
+        <tr><td>New place, high confidence (≥85%)</td><td><span class="tag t-merge">Auto-merge</span></td><td class="muted">Safe to add automatically</td></tr>
+        <tr><td>New place, medium confidence</td><td><span class="tag t-review">Human review</span></td><td class="muted">Worth a quick human check</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 4. TOOLS & SETUP -->
+  <section class="block" id="tools">
+    <div class="sec-num">04 · Tools &amp; Setup</div>
+    <h2>What it's built with</h2>
+    <div class="grid g2">
+      <div class="card2"><div class="ic">🧠</div><h3>The agent (server-side)</h3>
+        <p class="muted">A small pipeline that runs the 4 stations and returns a decision + reasoning trace.</p>
+        <div style="margin-top:8px">
+          <span class="pill">Vision-Language Model</span><span class="pill">Dice coefficient</span>
+          <span class="pill">Haversine distance</span><span class="pill">Weighted scoring rules</span>
+        </div>
+      </div>
+      <div class="card2"><div class="ic">🖥️</div><h3>The dashboard (front-end)</h3>
+        <p class="muted">A single live page: map hero, impact metrics, submission gallery, agent reasoning, operator queue.</p>
+        <div style="margin-top:8px">
+          <span class="pill">Next.js</span><span class="pill">React</span><span class="pill">TypeScript</span>
+          <span class="pill">Tailwind CSS</span><span class="pill">Leaflet + OpenStreetMap</span>
+        </div>
+      </div>
+    </div>
+
+    <h3>Why these choices (the TPM rationale)</h3>
+    <ul class="clean">
+      <li><b>Vision-Language Model</b> — the only component that can "read" a photo into structured fields; the technology Grab already uses.</li>
+      <li><b>Real matching math (Dice + Haversine)</b> — the duplicate/new decision is <em>computed, not guessed</em>, so it's explainable and testable.</li>
+      <li><b>Next.js + React</b> — industry-standard, easy to staff, and lets the UI and the agent's backend live in one project.</li>
+      <li><b>Leaflet + OpenStreetMap</b> — free, open mapping; no paid map key needed to demo the impact.</li>
+      <li><b>Transparent rules for the decision</b> — deliberately not a black box; thresholds are dials Ops controls and Audit can inspect.</li>
+    </ul>
+
+    <div class="note">
+      <strong>Prototype vs production — one seam.</strong> The vision step is isolated behind a single function, <code>extractFromImage()</code>. The demo runs offline with mocked reads (no key, no cost); going live means replacing the inside of that one function with a real Claude Opus 4.8 vision call. The matching, corroboration, rules and UI stay exactly the same. That's a deliberate decision to de-risk the mock → production transition.
+    </div>
+  </section>
+
+  <!-- 5. REUSE -->
+  <section class="block" id="reuse">
+    <div class="sec-num">05 · Reuse in any TPM work</div>
+    <h2>A repeatable playbook, not a one-off</h2>
+    <p class="lead">Strip out "storefront photos" and "map" and what's left is a general pattern for <strong>any high-volume manual review process</strong> — content moderation, KYC/document checks, support-ticket triage, invoice/expense approvals, QA review, claims processing.</p>
+
+    <div class="grid g2" style="margin-top:8px">
+      <div class="card2"><div class="ic">①</div><h3>Find the toil</h3><p class="muted">A repetitive, high-volume human decision where most cases are routine. Volume × handle-time = the target.</p></div>
+      <div class="card2"><div class="ic">②</div><h3>Split easy vs. hard</h3><p class="muted">Insert AI as the first pass. Automate the confident majority; route the uncertain minority to humans. Confidence-based routing is the heart of it.</p></div>
+      <div class="card2"><div class="ic">③</div><h3>Keep humans on edge cases</h3><p class="muted">Never auto-decide when unsure. Hand humans a pre-written summary so even the hard cases get faster.</p></div>
+      <div class="card2"><div class="ic">④</div><h3>Instrument &amp; benchmark</h3><p class="muted">Measure automation rate, time saved, and error rate from day one. Pilot in one place, prove the numbers, then scale.</p></div>
+    </div>
+
+    <h3>The five questions to ask of any process</h3>
+    <table>
+      <tbody>
+        <tr><td>1</td><td><b>What's the repetitive human decision, and how often does it happen?</b></td><td class="muted">→ sizes the opportunity</td></tr>
+        <tr><td>2</td><td><b>What inputs does the human look at to decide?</b></td><td class="muted">→ defines what the AI must read/extract</td></tr>
+        <tr><td>3</td><td><b>What signals separate an easy case from a hard one?</b></td><td class="muted">→ becomes the confidence/routing logic</td></tr>
+        <tr><td>4</td><td><b>What's the cost of a wrong auto-decision?</b></td><td class="muted">→ sets how conservative the auto bar is</td></tr>
+        <tr><td>5</td><td><b>How will we measure toil removed and quality kept?</b></td><td class="muted">→ the metrics that justify funding</td></tr>
+      </tbody>
+    </table>
+
+    <div class="note">
+      <strong>The transferable one-liner:</strong> <em>"Use AI to clear the routine majority automatically, route the ambiguous minority to humans with the analysis pre-done, instrument the toil saved, and prove it in one pilot before scaling."</em> That sentence applies far beyond maps.
+    </div>
+  </section>
+
+  <footer>
+    Project artifact · Agentic AI for Autonomous POI Validation · Vidya Unni · TPM
+  </footer>
+</div>
+
+</div><!-- /project poi -->
+
+<!-- ============================================================= -->
+<!-- PROJECT 2 · STT MEETING AGENT                                 -->
+<!-- ============================================================= -->
+<div class="project" id="stt">
+
+<header>
+  <div class="inner">
+    <span class="kicker">TPM Project Artifact</span>
+    <h1>Ambient AI Agent for Field-Force Meeting Toil</h1>
+    <p>An always-listening agent that sits in adviser–client meetings, transcribes the conversation, extracts the follow-up actions, and auto-creates them in the adviser's tools — shortening the loop from conversation to committed follow-up.</p>
+    <div class="meta">
+      <div><b>Owner</b>Vidya Unni · TPM</div>
+      <div><b>Domain</b>Field Force · Adviser Enablement</div>
+      <div><b>Stage</b>Working prototype → pilot</div>
+      <div><b>Type</b>Ambient LLM agent (STT + tool-calling)</div>
+    </div>
+    <div class="stack">
+      <div class="lbl">Key technology proposed for production</div>
+      <div class="row">
+        <div class="techpill"><span>STT engine</span><b>Deepgram (streaming + batch)</b></div>
+        <div class="techpill"><span>LLM agent</span><b>Claude Opus 4.8</b></div>
+        <div class="techpill"><span>Action layer</span><b>Function-calling / tool use</b></div>
+        <div class="techpill"><span>Downstream</span><b>Jira via Atlassian MCP + adviser apps</b></div>
+        <div class="techpill"><span>Runtime</span><b>Python workers + SQLite queue</b></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav>
+  <div class="inner">
+    <a href="#idea">The idea</a>
+    <a href="#how">How it works</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- SLIDE 1 -->
+  <section class="block" id="idea">
+    <div class="sec-num">01 · The idea</div>
+    <h2>Turn meeting talk into filed follow-ups — automatically</h2>
+    <p class="lead">After every adviser–client meeting, someone re-keys the agreed actions into downstream tools. This agent listens, transcribes, extracts the action items with an LLM, and files each one in Jira via function-calling — behind a human confirmation gate, so the adviser stays present and nothing is forgotten.</p>
+    <div class="grid g3" style="margin-top:14px">
+      <div class="card2"><div class="ic" style="background:var(--grab-light)">🎙️</div><h3>Capture</h3><p class="muted">Records &amp; persists the meeting — never blocks the conversation.</p></div>
+      <div class="card2"><div class="ic" style="background:var(--grab-light)">🧩</div><h3>Understand</h3><p class="muted">Speech → transcript → summary + action items with owners &amp; due dates.</p></div>
+      <div class="card2"><div class="ic" style="background:var(--amber-bg)">✅</div><h3>Act</h3><p class="muted">Each item → a Jira issue via tool-calling, behind a confirm gate.</p></div>
+    </div>
+    <div class="metricrow">
+      <div class="metric"><b>3 stages</b><span>fully decoupled pipeline</span></div>
+      <div class="metric"><b>0 keys</b><span>to run the demo (mock mode)</span></div>
+      <div class="metric"><b>Idempotent</b><span>no duplicate follow-ups</span></div>
+      <div class="metric"><b>Pre-drafted</b><span>adviser just confirms</span></div>
+    </div>
+  </section>
+
+  <!-- SLIDE 2 -->
+  <section class="block" id="how">
+    <div class="sec-num">02 · How it works</div>
+    <h2>Three decoupled stages, one durable queue</h2>
+
+    <div class="diagram">
+      <svg viewBox="0 0 960 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Three-stage decoupled pipeline">
+        <defs>
+          <marker id="stt-ar" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#00B14F"/></marker>
+          <marker id="stt-arG" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#008a3e"/></marker>
+          <marker id="stt-arA" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#f59e0b"/></marker>
+        </defs>
+
+        <!-- source -->
+        <rect x="6" y="26" width="118" height="70" rx="12" fill="#0d1b2a"/>
+        <text x="65" y="55" text-anchor="middle" class="flowlabel" fill="#fff">🎙️ Meeting</text>
+        <text x="65" y="73" text-anchor="middle" class="flowsub" fill="#9fb3c8">mic / audio file</text>
+
+        <!-- Stage A -->
+        <rect x="150" y="18" width="168" height="86" rx="12" fill="#fff" stroke="#00B14F" stroke-width="2"/>
+        <text x="234" y="44" text-anchor="middle" class="flowlabel">A · Capture</text>
+        <text x="234" y="63" text-anchor="middle" class="flowsub">persist audio chunks</text>
+        <text x="234" y="80" text-anchor="middle" class="flowsub">never transcribes</text>
+        <text x="234" y="96" text-anchor="middle" style="font:700 10px sans-serif" fill="#00B14F">sounddevice</text>
+
+        <!-- Stage B -->
+        <rect x="396" y="18" width="168" height="86" rx="12" fill="#fff" stroke="#00B14F" stroke-width="2"/>
+        <text x="480" y="44" text-anchor="middle" class="flowlabel">B · Transcribe</text>
+        <text x="480" y="63" text-anchor="middle" class="flowsub">stored audio → text</text>
+        <text x="480" y="80" text-anchor="middle" class="flowsub">segments + timings</text>
+        <text x="480" y="96" text-anchor="middle" style="font:700 10px sans-serif" fill="#00B14F">Deepgram / Whisper</text>
+
+        <!-- Stage C -->
+        <rect x="642" y="18" width="168" height="86" rx="12" fill="#fff" stroke="#00B14F" stroke-width="2"/>
+        <text x="726" y="44" text-anchor="middle" class="flowlabel">C · Extract &amp; act</text>
+        <text x="726" y="63" text-anchor="middle" class="flowsub">summary + action items</text>
+        <text x="726" y="80" text-anchor="middle" class="flowsub">tool-calls to Jira</text>
+        <text x="726" y="96" text-anchor="middle" style="font:700 10px sans-serif" fill="#00B14F">Claude Opus 4.8</text>
+
+        <!-- arrows source -> A -->
+        <line x1="124" y1="61" x2="146" y2="61" stroke="#00B14F" stroke-width="2.5" marker-end="url(#stt-ar)"/>
+
+        <!-- queue band -->
+        <rect x="150" y="150" width="660" height="58" rx="12" fill="#eef7f1" stroke="#008a3e" stroke-width="1.5" stroke-dasharray="6 5"/>
+        <text x="480" y="175" text-anchor="middle" class="flowlabel" fill="#008a3e">🗄️ SQLite work queue</text>
+        <text x="480" y="194" text-anchor="middle" class="flowsub" fill="#008a3e">status: pending → processing → done · atomic claim · idempotency key</text>
+
+        <!-- A writes audio_chunks -->
+        <line x1="210" y1="104" x2="210" y2="148" stroke="#008a3e" stroke-width="2.2" marker-end="url(#stt-arG)"/>
+        <text x="188" y="132" text-anchor="end" class="flowsub" fill="#008a3e">audio</text>
+        <!-- queue -> B -->
+        <line x1="440" y1="150" x2="440" y2="106" stroke="#008a3e" stroke-width="2.2" marker-end="url(#stt-arG)"/>
+        <!-- B writes transcript_segments -->
+        <line x1="500" y1="104" x2="500" y2="148" stroke="#008a3e" stroke-width="2.2" marker-end="url(#stt-arG)"/>
+        <text x="522" y="132" text-anchor="start" class="flowsub" fill="#008a3e">segments</text>
+        <!-- queue -> C -->
+        <line x1="700" y1="150" x2="700" y2="106" stroke="#008a3e" stroke-width="2.2" marker-end="url(#stt-arG)"/>
+
+        <!-- C -> gate -->
+        <polygon points="726,232 786,262 726,292 666,262" fill="#0d1b2a"/>
+        <text x="726" y="258" text-anchor="middle" class="flowlabel" fill="#fff">Gate</text>
+        <text x="726" y="274" text-anchor="middle" class="flowsub" fill="#9fb3c8">dry-run / confirm</text>
+        <line x1="726" y1="208" x2="726" y2="230" stroke="#f59e0b" stroke-width="2.2" marker-end="url(#stt-arA)"/>
+
+        <!-- outputs -->
+        <rect x="820" y="150" width="134" height="52" rx="11" fill="#e6f7ee" stroke="#008a3e" stroke-width="2"/>
+        <text x="887" y="173" text-anchor="middle" class="flowlabel" fill="#008a3e">✓ Create issue</text>
+        <text x="887" y="191" text-anchor="middle" class="flowsub" fill="#008a3e">confirmed / --yes</text>
+
+        <rect x="820" y="238" width="134" height="48" rx="11" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+        <text x="887" y="259" text-anchor="middle" class="flowlabel" fill="#92600a">✎ Dry-run</text>
+        <text x="887" y="276" text-anchor="middle" class="flowsub" fill="#92600a">preview, nothing written</text>
+
+        <line x1="786" y1="255" x2="818" y2="200" stroke="#008a3e" stroke-width="2.2" marker-end="url(#stt-arG)"/>
+        <line x1="786" y1="266" x2="818" y2="262" stroke="#f59e0b" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#stt-arA)"/>
+      </svg>
+    </div>
+
+    <div class="grid g2" style="margin-top:16px">
+      <div class="card2"><div class="ic">⛓️</div><h3>Decoupled &amp; durable</h3><p class="muted">Stages hand off through a SQLite queue — capture never waits on model latency, and a crash just resumes.</p></div>
+      <div class="card2"><div class="ic">🧠</div><h3>Claude + function-calling</h3><p class="muted">Opus 4.8 extracts the action items and calls the tool that files them in Jira.</p></div>
+      <div class="card2"><div class="ic">🛡️</div><h3>Safe by default</h3><p class="muted">Every write passes a gate (dry-run / confirm / <code>--yes</code>); idempotency keys stop duplicates.</p></div>
+      <div class="card2"><div class="ic">🔌</div><h3>Pluggable &amp; reusable</h3><p class="muted">Swap STT / LLM / Jira by config. Same pattern fits any conversation-to-commitment workflow.</p></div>
+    </div>
+
+    <div class="note"><strong>One seam demo → production:</strong> runs fully offline with <code>LLM_BACKEND=mock</code> + <code>STT_BACKEND=fake</code> (no key, no cost, no tickets). Going live just flips to real Claude + STT — queue, gate and Jira integration stay identical.</div>
+  </section>
+
+  <footer>
+    Project artifact · Ambient AI Agent for Field-Force Meeting Toil · Vidya Unni · TPM
+  </footer>
+</div>
+
+</div><!-- /project stt -->
+
+<script>
+  (function(){
+    var buttons = document.querySelectorAll('.switcher button');
+    var projects = document.querySelectorAll('.project');
+    function show(target){
+      projects.forEach(function(p){ p.classList.toggle('active', p.id === target); });
+      buttons.forEach(function(b){ b.classList.toggle('active', b.dataset.target === target); });
+      window.scrollTo({top:0});
+    }
+    buttons.forEach(function(b){
+      b.addEventListener('click', function(){ show(b.dataset.target); });
+    });
+  })();
+</script>
+</body>
+</html>
