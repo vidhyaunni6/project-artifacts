@@ -94,8 +94,12 @@
   .diagram{background:linear-gradient(180deg,#fbfdfc,#f2f7f4);border:1px solid var(--line);
     border-radius:14px;padding:20px;overflow-x:auto;margin-top:8px}
   svg{max-width:100%;height:auto;display:block}
-  .flowlabel{font:600 13px/1.2 -apple-system,sans-serif;fill:var(--ink)}
-  .flowsub{font:500 11px/1.2 -apple-system,sans-serif;fill:var(--muted)}
+  /* No fill here on purpose: a CSS fill would override the inline fill="" on each
+     <text>, hiding the white labels inside the dark boxes. Colors are set per-element. */
+  .flowlabel{font:600 13px/1.2 -apple-system,sans-serif}
+  .flowsub{font:500 11px/1.2 -apple-system,sans-serif}
+  .flowlabel:not([fill]){fill:var(--ink)}
+  .flowsub:not([fill]){fill:var(--muted)}
   .metricrow{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:6px}
   .metric{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:16px;text-align:center}
   .metric b{display:block;font-size:24px;font-weight:800;color:var(--grab-dark);letter-spacing:-.02em}
